@@ -2,26 +2,45 @@
 <html>
 
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>恐竜研究所 - よみがえる恐竜たち</title>
-  <!-- A-Frame（3DやVRの表示に使うライブラリ） -->
+
+  <!-- A-Frame（3DやVRを表示するためのライブラリ） -->
   <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
-  <!-- AR.js（マーカーを使ったARに必要なライブラリ） -->
+
+  <!-- AR.js（マーカーを使ったARを可能にするライブラリ） -->
   <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
-  <!-- animation-mixer（3Dモデルのアニメーションを動かすためのライブラリ） -->
+
+  <!-- aframe-extras（恐竜を動かすアニメーション機能などが含まれている） -->
   <script src="https://unpkg.com/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
+
+  <style>
+    /* 画面全体を使う設定 */
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+  </style>
 </head>
 
 <body>
-  <!-- A-Frameの3D・ARのシーン -->
-  <a-scene embedded arjs>
+  <!-- A-Frameのシーン（3D空間）。この中にARのすべてを入れる -->
+  <a-scene embedded arjs style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+
+    <!-- 使用するモデルや音などの素材を先に読み込む -->
     <a-assets>
-      <!-- 使う3Dモデルを読み込み -->
+      <!-- ティラノサウルスの3Dモデル -->
       <a-asset-item id="trex" src="./assets/glb/t-rex.glb"></a-asset-item>
     </a-assets>
 
-    <!-- 「hiro」というマーカーが見えたときに表示されるもの -->
+    <!-- マーカー「hiro」がカメラで見つかったときに出現するオブジェクトたち -->
     <a-marker preset="hiro">
+
       <!-- 恐竜の3Dモデル -->
       <!-- 
         ティラノサウルス本体
@@ -34,65 +53,11 @@
       <a-entity id="dino" gltf-model="#trex" position="0 0 0" rotation="0 90 -45" scale="0.05 0.05 0.05"
         animation-mixer="clip: Armature|TRex_Run">
       </a-entity>
-
-      <!-- セリフの吹き出しグループ -->
-      <a-entity id="dialogGroup" visible="false" position="0 0.9 -1" rotation="-45 0 0">
-        <!-- 吹き出しの黒い背景 -->
-        <a-plane id="bubbleBg" color="black" width="2" height="0.5" position="0 0 0" material="opacity: 0.75"></a-plane>
-        <!-- 吹き出しのしっぽ（三角形） -->
-        <a-entity id="bubbleTail" geometry="primitive: triangle; vertexA: -0.2 0 0; vertexB: 0 -0.2 0; vertexC: 0.2 0 0"
-          position="0 -0.35 0.01" material="color: black; opacity: 0.7; transparent: true">
-        </a-entity>
-        <!-- 吹き出しの中の文字 -->
-        <a-text id="dialogText" value="" align="center" color="white" position="0 0 0.01" width="2"></a-text>
-      </a-entity>
     </a-marker>
 
-    <!-- カメラの位置（ARで使う） -->
-    <a-entity camera></a-entity>
+    <!-- カメラ（スマホやPCのカメラでマーカーを映す） -->
+    <a-entity camera position="0 0 0"></a-entity> <!-- 位置は原点（必要に応じて動かせる） -->
   </a-scene>
-
-  <script>
-    // マーカーの要素を取得
-    const marker = document.querySelector("a-marker");
-    // 吹き出しのグループ要素を取得
-    const dialogGroup = document.querySelector("#dialogGroup");
-    // 吹き出しのテキスト要素を取得
-    const dialogText = document.querySelector("#dialogText");
-
-    // 表示するセリフ（今回は1つだけ）
-    const message = "The King Returns."; // 表示するセリフ
-
-    // セリフを消すまでの時間（ミリ秒）
-    const displayTime = 4000; // 4秒間表示
-
-    // セリフを消すタイマーID
-    let dialogTimer = null;
-
-    // マーカーが見つかったときの処理
-    marker.addEventListener("markerFound", () => {
-      // 吹き出しを表示
-      dialogGroup.setAttribute("visible", true);
-      // セリフをセットする
-      dialogText.setAttribute("value", message);
-
-      // セリフを消すタイマーをセット
-      dialogTimer = setTimeout(() => {
-        dialogGroup.setAttribute("visible", false);
-      }, displayTime);
-    });
-
-    // マーカーが見えなくなったときの処理
-    marker.addEventListener("markerLost", () => {
-      // タイマーを解除して
-      if (dialogTimer) {
-        clearTimeout(dialogTimer);
-        dialogTimer = null;
-      }
-      // 吹き出しをすぐに消す
-      dialogGroup.setAttribute("visible", false);
-    });
-  </script>
 </body>
 
-</html>
+</html
